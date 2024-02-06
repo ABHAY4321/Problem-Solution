@@ -12,11 +12,11 @@ echo 'ClientAliveInterval 60' | sudo tee --append /etc/ssh/sshd_config
 
 ## The command for that on Ubuntu Linux would be:
 
-sudo service ssh restart
+sudo systemctl restart ssh.service
 
 ## On any other Linux, though, the following is probably correct:
 
-sudo service sshd restart
+sudo systemctl restart sshd.service
 
 ## Disconnect:
 
