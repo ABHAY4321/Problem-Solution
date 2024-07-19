@@ -1,0 +1,6 @@
+winget upgrade => See the list of available packages.
+winget pin add <package> => Not include this package in upgrade list.
+winget upgrade --all => Uprade all packages except above pinned package.
+winget pin add <package> => Include this package in upgrade list.
+winget upgrade --all
+winget upgrade --all --accept-package-agreements --accept-source-agreements => If getting EULA error.
