@@ -1,0 +1,8 @@
+# sudo systemctl enable grafana-server.service
+==> Error: 
+        Synchronizing state of grafana-server.service with SysV service script with /usr/lib/systemd/systemd-sysv-install.
+        Executing: /usr/lib/systemd/systemd-sysv-install enable grafana-server
+        Failed to execute /usr/lib/systemd/systemd-sysv-install: No such file or directory
+==> Solution:
+        # sudo dnf install chkconfig
+# sudo systemctl enable grafana-server.service => Problem Solved.
