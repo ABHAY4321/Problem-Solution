@@ -1,3 +1,4 @@
+========== Issue Faced in Rocky Linux 9 ===========
 # sudo systemctl enable grafana-server.service
 ==> Error: 
         Synchronizing state of grafana-server.service with SysV service script with /usr/lib/systemd/systemd-sysv-install.
