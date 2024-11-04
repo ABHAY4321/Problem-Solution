@@ -1,0 +1,8 @@
+Problem:
+Why the entire directory visible in terminal because it takes too much space?
+
+Solution: 
+Since bash 4, to shorten the depth of directory in command-line is done by using PROMPT_DIRTRIM in the .bashrc file. Just remember to reopen your terminal or source .bashrc file.
+
+PROMPT_DIRTRIM=1
+source ~/.bashrc
