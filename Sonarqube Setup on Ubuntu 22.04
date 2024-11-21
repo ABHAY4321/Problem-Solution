@@ -1,0 +1,115 @@
+sudo apt update
+sudo apt upgrade -y
+
+sudo apt install openjdk-17-jdk -y
+java -version
+
+sudo apt install curl ca-certificates
+sudo install -d /usr/share/postgresql-common/pgdg
+sudo curl -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc --fail https://www.postgresql.org/media/keys/ACCC4CF8.asc
+sudo sh -c 'echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+
+sudo apt update
+
+sudo apt install postgresql -y
+
+sudo -i -u postgres
+
+createuser sonaruser
+createdb sonardb -O sonaruser
+psql
+
+ALTER USER sonaruser WITH ENCRYPTED PASSWORD 'test@123';
+\q
+
+exit
+
+wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-10.7.0.96327.zip
+
+unzip -q sonarqube-10.7.0.96327.zip
+sudo mv sonarqube-10.7.0.96327 /opt/sonarqube
+
+sudo adduser --system --no-create-home --group --disabled-login sonarqube
+
+sudo chown -R sonarqube:sonarqube /opt/sonarqube
+
+sudo vim /opt/sonarqube/conf/sonar.properties
+==========================================================
+sonar.jdbc.username=sonaruser
+sonar.jdbc.password=test@123
+sonar.jdbc.url=jdbc:postgresql://localhost/sonardb
+==========================================================
+
+
+sudo vim /etc/systemd/system/sonarqube.service
+==========================================================
+[Unit]
+Description=SonarQube service
+After=syslog.target network.target
+
+[Service]
+Type=forking
+
+ExecStart=/opt/sonarqube/bin/linux-x86-64/sonar.sh start
+ExecStop=/opt/sonarqube/bin/linux-x86-64/sonar.sh stop
+
+User=sonarqube
+Group=sonarqube
+Restart=always
+
+LimitNOFILE=65536
+LimitNPROC=4096
+
+[Install]
+WantedBy=multi-user.target
+==========================================================
+
+sudo systemctl daemon-reload
+sudo systemctl start sonarqube
+sudo systemctl enable sonarqube
+
+ulimit -n
+sudo vim /etc/security/limits.conf
+==========================================================
+sonarqube   -   nofile   65536
+sonarqube   -   nproc    4096
+==========================================================
+sudo sysctl -w vm.max_map_count=262144
+
+sudo vim /etc/sysctl.conf
+==========================================================
+vm.max_map_count=262144
+==========================================================
+sudo sysctl -p
+
+sudo ufw allow 9000/tcp
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw reload
+sudo ufw status
+
+sudo apt install nginx -y
+
+sudo vim /etc/nginx/sites-available/sonarqube.cricbuzz.com
+==========================================================
+server {
+    listen 80;
+    server_name sonarqube.cricbuzz.com;
+
+    access_log /var/log/nginx/sonarqube.access.log;
+    error_log /var/log/nginx/sonarqube.error.log;
+
+    location / {
+        proxy_pass http://localhost:9000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+==========================================================
+
+sudo ln -s /etc/nginx/sites-available/sonarqube.cricbuzz.com /etc/nginx/sites-enabled/
+
+sudo nginx -t
+sudo systemctl restart nginx
