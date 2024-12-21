@@ -1,0 +1,11 @@
+==> If we setup fresh Ubuntu desktop machine in VMWare, we won't be able to copy-paste between host & gusest OS. Also if we exit from full screen, it won't auto adjust the screen as per the new screen size. To solve these, follow the steps below-
+1. Open the Terminal
+2. Update Package Information
+# sudo apt-get update
+3. Install VMware Tools on GUI-Based Ubuntu
+# sudo apt-get install open-vm-tools-desktop
+4. Install VMware Tools on Terminal-Based Ubuntu
+# sudo apt-get install open-vm-tools
+5. Reboot the Machine
+# sudo reboot
+==> Now we will be done with resolving above issues.
